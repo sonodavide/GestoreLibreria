@@ -130,4 +130,25 @@ public class JsonBookRepository implements BookRepository {
             throw new RuntimeException("Error during safe JSON file write", e);
         }
     }
+    @Override
+    public synchronized List<Book> addAll(List<Book> newBooks) {
+        List<Book> existingBooks = readAll();
+
+        // Filter out books with duplicate ISBNs
+        Set<String> existingIsbns = existingBooks.stream()
+                .map(Book::getIsbn)
+                .collect(Collectors.toSet());
+
+        List<Book> booksToAdd = newBooks.stream()
+                .filter(book -> !existingIsbns.contains(book.getIsbn()))
+                .collect(Collectors.toList());
+
+        if (booksToAdd.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        existingBooks.addAll(booksToAdd);
+        writeAll(existingBooks);
+        return booksToAdd;
+    }
 }
