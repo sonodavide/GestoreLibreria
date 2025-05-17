@@ -22,7 +22,7 @@ public class GestoreLibreriaApp {
                 .setPublisher("Bompiani")
                 .setPages(1200)
                 .setReadStatus(ReadStatus.READ)
-                .setGenres(Arrays.asList("Fantasy", "Adventure"))
+                .setGenre("Fantasy")
                 .setReview(review1)
                 .build();
 
@@ -38,7 +38,7 @@ public class GestoreLibreriaApp {
                 .setPublisher("Mondadori")
                 .setPages(300)
                 .setReadStatus(ReadStatus.READING)
-                .setGenres(Arrays.asList("Science Fiction"))
+                .setGenre("Science Fiction")
                 .build();
 
         System.out.println("Libro 2:");

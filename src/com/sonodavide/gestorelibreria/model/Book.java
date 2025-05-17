@@ -17,8 +17,9 @@ public class Book {
     private String publisher;
     private int pages;
     private ReadStatus readStatus;
-    private List<String> genres;
+    private String genre;
     private Review review;
+    private BookCover cover;
 
 
     public static class Builder {
@@ -28,7 +29,7 @@ public class Book {
         private String author="";
         private String publisher="";
         private ReadStatus readStatus=ReadStatus.NOT_READ;
-        private List<String> genres=new ArrayList<>();
+        private String genre="";
         private Review review=null;
 
         public Builder setIsbn(String isbn) {
@@ -56,8 +57,8 @@ public class Book {
             this.readStatus = readStatus;
             return this;
         }
-        public Builder setGenres(List<String> genres) {
-            this.genres = genres;
+        public Builder setGenre(String genre) {
+            this.genre = genre;
             return this;
         }
         public Builder setReview(Review review) {
@@ -75,7 +76,7 @@ public class Book {
         this.publisher = builder.publisher;
         this.pages = builder.pages;
         this.readStatus = builder.readStatus;
-        this.genres = builder.genres;
+        this.genre = builder.genre;
         this.review = builder.review;
 
     }
