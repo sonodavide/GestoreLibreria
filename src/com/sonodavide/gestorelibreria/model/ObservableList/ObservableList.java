@@ -7,15 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ObservableList implements Subject{
+public class ObservableList<T> implements Subject{
     private final List<Observer> observers = new ArrayList<>();
-    private List<BookDto> books;
+    private List<T> list;
 
     public ObservableList() {
-        books = new ArrayList<>();
+        list = new ArrayList<>();
     }
-    public ObservableList(List<BookDto> books) {
-        this.books = books;
+    public ObservableList(List<T> list) {
+        this.list = list;
     }
     @Override
     public void attach(Observer observer) {
@@ -27,18 +27,18 @@ public class ObservableList implements Subject{
         this.observers.remove(observer);
     }
 
-    public void addBook(BookDto book) {
-        books.add(book);
+    public void addElement(T element) {
+        list.add(element);
         notifyObservers();
     }
 
-    public void deleteBook(BookDto book) {
-        books.remove(book);
+    public void deleteElement(T element) {
+        list.remove(element);
         notifyObservers();
     }
 
-    public List<BookDto> getBooks() {
-        return Collections.unmodifiableList(books);
+    public List<T> getlist() {
+        return Collections.unmodifiableList(list);
 
     }
 

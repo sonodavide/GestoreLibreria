@@ -5,24 +5,47 @@ import com.sonodavide.gestorelibreria.model.ReadStatus;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
 public class LibreriaPersonale extends JFrame {
     private JTable libraryTable;
     private JTextField searchField;
-    private JComboBox<String> genreFilter;
-    private JComboBox<String> readingStatusFilter;
-    private JComboBox<String> sortBy;
+    private JComboBox<String> searchTypeCombo;
     private JPanel bookDetailsPanel;
+    private JButton addButton, editButton, deleteButton;
 
     private List<Book> books;
     // Dati di esempio
     private final Object[][] bookData = {
+            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
+            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
+            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
+            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
+            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
+            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
+            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
+            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
+            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
+            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
+            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
+            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
             {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
             {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
             {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
@@ -35,6 +58,7 @@ public class LibreriaPersonale extends JFrame {
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.books = this.getSampleBooks();
+
         // Imposta un look moderno
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -42,12 +66,15 @@ public class LibreriaPersonale extends JFrame {
             e.printStackTrace();
         }
 
+        // Crea la barra dei menu
+        createMenuBar();
+
         // Pannello principale con BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         mainPanel.setBackground(new Color(240, 240, 245));
 
-        // Pannello superiore per ricerca e filtri
+        // Pannello superiore per pulsanti e ricerca
         JPanel topPanel = createTopPanel();
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
@@ -59,236 +86,273 @@ public class LibreriaPersonale extends JFrame {
         bookDetailsPanel = createBookDetailsPanel();
         mainPanel.add(bookDetailsPanel, BorderLayout.EAST);
 
-        // Pannello inferiore con valutazioni
-        JPanel bottomPanel = createBottomPanel();
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
         setContentPane(mainPanel);
         setLocationRelativeTo(null);
+
+
+    }
+
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        // Menu Opzioni
+        JMenu opzioniMenu = new JMenu("Opzioni");
+
+        JMenuItem importaItem = new JMenuItem("Importa");
+        JMenuItem esportaItem = new JMenuItem("Esporta");
+
+        // Aggiungi action listeners
+        importaItem.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Funzione Importa non ancora implementata",
+                    "Importa", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        esportaItem.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Funzione Esporta non ancora implementata",
+                    "Esporta", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        opzioniMenu.add(importaItem);
+        opzioniMenu.add(esportaItem);
+
+        menuBar.add(opzioniMenu);
+
+        setJMenuBar(menuBar);
     }
 
     private JPanel createTopPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setOpaque(false);
-        
+
+        // Pannello superiore con i pulsanti principali
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        buttonPanel.setOpaque(false);
+
+        // Crea i pulsanti principali
+        addButton = new JButton("Aggiungi");
+        editButton = new JButton("Modifica");
+        deleteButton = new JButton("Elimina");
+
+        // Stile dei pulsanti
+        addButton.setBackground(new Color(40, 167, 69));
+        addButton.setForeground(Color.WHITE);
+        addButton.setPreferredSize(new Dimension(100, 35));
+
+        editButton.setBackground(new Color(70, 130, 180));
+        editButton.setForeground(Color.WHITE);
+        editButton.setPreferredSize(new Dimension(100, 35));
+
+        deleteButton.setBackground(new Color(220, 53, 69));
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setPreferredSize(new Dimension(100, 35));
+
+        // Aggiungi action listeners
+        addButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Funzione Aggiungi non ancora implementata",
+                    "Aggiungi Libro", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        editButton.addActionListener(e -> {
+            int selectedRow = libraryTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                JOptionPane.showMessageDialog(this, "Modifica libro: " + books.get(selectedRow).getTitle(),
+                        "Modifica Libro", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleziona un libro da modificare",
+                        "Nessun libro selezionato", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        deleteButton.addActionListener(e -> {
+            int selectedRow = libraryTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                int result = JOptionPane.showConfirmDialog(this,
+                        "Sei sicuro di voler eliminare: " + books.get(selectedRow).getTitle() + "?",
+                        "Conferma eliminazione", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(this, "Libro eliminato (simulazione)",
+                            "Eliminazione", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleziona un libro da eliminare",
+                        "Nessun libro selezionato", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+
         // Pannello di ricerca
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         searchPanel.setOpaque(false);
 
-        searchField = new JTextField(20);
-        searchField.putClientProperty("JTextField.placeholderText", "Cerca per titolo o autore...");
+        searchField = new JTextField(15);
+        searchField.putClientProperty("JTextField.placeholderText", "Inserisci testo di ricerca...");
+
+        searchTypeCombo = new JComboBox<>(new String[]{"Titolo", "Autore", "Genere"});
+        searchTypeCombo.setPreferredSize(new Dimension(100, 35));
 
         JButton searchButton = new JButton("Cerca");
         searchButton.setBackground(new Color(70, 130, 180));
         searchButton.setForeground(Color.WHITE);
+        searchButton.setPreferredSize(new Dimension(100, 35));
 
-        searchPanel.add(new JLabel("Cerca: "));
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-
-        // Pannello filtri
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        filterPanel.setOpaque(false);
-
-        genreFilter = new JComboBox<>(new String[]{"Tutti i generi", "Fantasy", "Sci-Fi", "Storico", "Distopico", "Filosofico"});
-        readingStatusFilter = new JComboBox<>(new String[]{"Tutti gli stati", "Letto", "Da leggere", "In corso"});
-        sortBy = new JComboBox<>(new String[]{"Ordina per", "Titolo (A-Z)", "Titolo (Z-A)", "Autore", "Genere"});
-
-        filterPanel.add(new JLabel("Genere: "));
-        filterPanel.add(genreFilter);
-        filterPanel.add(new JLabel("Stato: "));
-        filterPanel.add(readingStatusFilter);
-        filterPanel.add(new JLabel("Ordina: "));
-        filterPanel.add(sortBy);
-
-        panel.add(searchPanel, BorderLayout.WEST);
-        panel.add(filterPanel, BorderLayout.EAST);
-
-        return panel;
-    }
-
-    private JPanel createBookCard(Book book) {
-        // Crea una scheda con bordo arrotondato e ombra
-        JPanel card = new JPanel(new BorderLayout(5, 5));
-        card.setPreferredSize(new Dimension(200, 320));
-        card.setMinimumSize(new Dimension(180, 300));
-        card.setMaximumSize(new Dimension(220, 340));
-        card.setBorder(new CompoundBorder(
-                new EmptyBorder(5, 5, 5, 5), // Margine esterno
-                new CompoundBorder(
-                        new ShadowBorder(), // Ombra
-                        new CompoundBorder(
-                                new LineBorder(new Color(220, 220, 220), 1, true), // Bordo arrotondato
-                                new EmptyBorder(10, 10, 10, 10) // Padding interno
-                        )
-                )
-        ));
-        card.setBackground(Color.WHITE);
-
-        // Pannello della copertina
-        JPanel coverPanel = new JPanel(new BorderLayout());
-        coverPanel.setPreferredSize(new Dimension(180, 220));
-        coverPanel.setBackground(new Color(245, 245, 245));
-        coverPanel.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
-
-        // In una vera applicazione, caricherebbe l'immagine da URL
-        JLabel coverLabel = new JLabel("Copertina", JLabel.CENTER);
-        coverLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        coverPanel.add(coverLabel, BorderLayout.CENTER);
-
-        // Info del libro
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel(book.getTitle());
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel authorLabel = new JLabel(book.getAuthor());
-        authorLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-        authorLabel.setForeground(new Color(100, 100, 100));
-        authorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Pannello per genere e stato
-        JPanel metaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        metaPanel.setOpaque(false);
-
-        JLabel genreLabel = new JLabel(book.getGenre());
-        genreLabel.setFont(new Font("Arial", Font.ITALIC, 10));
-        genreLabel.setForeground(new Color(150, 150, 150));
-
-        JLabel statusLabel = createStatusLabel("letto");
-
-        metaPanel.add(genreLabel);
-        metaPanel.add(new JLabel("•"));
-        metaPanel.add(statusLabel);
-        metaPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Stelle di valutazione
-        // JPanel starsPanel = createStarsPanel(book.getReview().getStars());
-        JPanel starsPanel = createStarsPanel(5);
-        starsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        infoPanel.add(titleLabel);
-        infoPanel.add(Box.createVerticalStrut(2));
-        infoPanel.add(authorLabel);
-        infoPanel.add(Box.createVerticalStrut(5));
-        infoPanel.add(metaPanel);
-        infoPanel.add(Box.createVerticalStrut(5));
-        infoPanel.add(starsPanel);
-
-        // Aggiunge tutto alla scheda
-        card.add(coverPanel, BorderLayout.CENTER);
-        card.add(infoPanel, BorderLayout.SOUTH);
-
-        // Aggiunge interazione alla scheda
-        card.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                card.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                card.setBackground(new Color(250, 250, 255));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                card.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                card.setBackground(Color.WHITE);
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Qui si potrebbe aprire un dialogo con i dettagli del libro
-                JOptionPane.showMessageDialog(card,
-                        "Hai selezionato: " + book.getTitle() + " di " + book.getAuthor(),
-                        "Dettagli Libro", JOptionPane.INFORMATION_MESSAGE);
+        searchButton.addActionListener(e -> {
+            String searchText = searchField.getText();
+            String searchType = (String) searchTypeCombo.getSelectedItem();
+            if (!searchText.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Ricerca '" + searchText + "' per " + searchType + " (non ancora implementata)",
+                        "Ricerca", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
-        return card;
-    }
-    private JLabel createStatusLabel(String status) {
-        JLabel label = new JLabel(status);
-        label.setFont(new Font("Arial", Font.BOLD, 10));
+        searchPanel.add(new JLabel("Cerca:"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchTypeCombo);
+        searchPanel.add(searchButton);
 
-        switch (status) {
-            case "Letto":
-                label.setForeground(new Color(40, 167, 69));
-                break;
-            case "Da leggere":
-                label.setForeground(new Color(23, 162, 184));
-                break;
-            case "In corso":
-                label.setForeground(new Color(255, 193, 7));
-                break;
-            default:
-                label.setForeground(new Color(108, 117, 125));
-        }
-
-        return label;
-    }
-
-    private JPanel createStarsPanel(int rating) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        panel.setOpaque(false);
-
-        for (int i = 0; i < 5; i++) {
-            JLabel starLabel = new JLabel(i < rating ? "★" : "☆");
-            starLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-            starLabel.setForeground(i < rating ? new Color(255, 193, 7) : new Color(200, 200, 200));
-            panel.add(starLabel);
-        }
+        panel.add(buttonPanel, BorderLayout.WEST);
+        panel.add(searchPanel, BorderLayout.EAST);
 
         return panel;
     }
+
 
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        // Usiamo WrapLayout con allineamento a sinistra
-        JPanel booksGrid = new JPanel(new WrapLayout(FlowLayout.LEFT, 10, 10));
-        booksGrid.setOpaque(false);
-        booksGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // Crea i dati per la tabella
+        String[] columnNames = {"Titolo", "Autore", "Genere", "Stato"};
+        Object[][] tableData = new Object[books.size()][4];
 
-        for (Book book : books) {
-            JPanel bookCard = createBookCard(book);
-            bookCard.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    updateBookDetailsPanel(book);
-                }
-            });
-            booksGrid.add(bookCard);
+        for (int i = 0; i < books.size(); i++) {
+            Book book = books.get(i);
+            tableData[i][0] = book.getTitle();
+            tableData[i][1] = book.getAuthor();
+            tableData[i][2] = book.getGenre();
+            tableData[i][3] = book.getReadStatus().toString().replace("_", " ");
         }
 
-        JScrollPane scrollPane = new JScrollPane(booksGrid);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Disabilita lo scroll orizzontale
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-        // Mantieni il corretto ridimensionamento delle card
-        booksGrid.addComponentListener(new ComponentAdapter() {
+        // Crea la tabella
+        libraryTable = new JTable(tableData, columnNames) {
             @Override
-            public void componentResized(ComponentEvent e) {
-                booksGrid.revalidate();
-                booksGrid.repaint();
+            public boolean isCellEditable(int row, int column) {
+                return false; // Rende la tabella non editabile
+            }
+        };
+
+        // Personalizza l'aspetto della tabella
+        libraryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        libraryTable.setRowHeight(30);
+        libraryTable.setFont(new Font("Arial", Font.PLAIN, 12));
+        libraryTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 12));
+        libraryTable.getTableHeader().setBackground(new Color(240, 240, 245));
+        libraryTable.setGridColor(new Color(220, 220, 220));
+        libraryTable.setShowGrid(true);
+        libraryTable.setIntercellSpacing(new Dimension(1, 1));
+
+        // Imposta la larghezza delle colonne
+        libraryTable.getColumnModel().getColumn(0).setPreferredWidth(250); // Titolo
+        libraryTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Autore
+        libraryTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Genere
+        libraryTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Stato
+        libraryTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+                    int row = libraryTable.rowAtPoint(e.getPoint());
+                    if (row >= 0 && row < books.size()) {
+                        Book selectedBook = books.get(row);
+                        JOptionPane.showMessageDialog(
+                                LibreriaPersonale.this,
+                                "Hai fatto doppio clic su: " + selectedBook.getTitle(),
+                                "Doppio clic",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                    }
+                }
+            }
+        });
+        // Colora le righe alternate
+        libraryTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (isSelected) {
+                    c.setBackground(new Color(70, 130, 180));
+                    c.setForeground(Color.WHITE);
+                } else if (row % 2 == 0) {
+                    c.setBackground(new Color(250, 250, 250));
+                    c.setForeground(Color.BLACK);
+                } else {
+                    c.setBackground(Color.WHITE);
+                    c.setForeground(Color.BLACK);
+                }
+
+                return c;
+            }
+        });
+        libraryTable.getTableHeader().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = libraryTable.columnAtPoint(e.getPoint());
+                String columnName = libraryTable.getColumnName(column);
+
+                JOptionPane.showMessageDialog(
+                        LibreriaPersonale.this,
+                        "Hai cliccato sulla colonna: " + columnName,
+                        "Header cliccato",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
             }
         });
 
-        panel.add(scrollPane, BorderLayout.CENTER);
+        // Aggiungi listener per la selezione delle righe
+        libraryTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = libraryTable.getSelectedRow();
+                if (selectedRow >= 0 && selectedRow < books.size()) {
+                    Book selectedBook = books.get(selectedRow);
+                    updateBookDetailsPanel(selectedBook);
+                    // Abilita i pulsanti modifica ed elimina quando un libro è selezionato
+                    editButton.setEnabled(true);
+                    deleteButton.setEnabled(true);
+                } else {
+                    // Disabilita i pulsanti quando nessun libro è selezionato
+                    editButton.setEnabled(false);
+                    deleteButton.setEnabled(false);
+                }
+            }
+        });
+
+        // Inizialmente disabilita i pulsanti modifica ed elimina
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+
+        // Crea lo scroll pane per la tabella
+        JScrollPane scrollPane = new JScrollPane(libraryTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(Color.WHITE);
+
+        JPanel tableWrapper = new JPanel(new BorderLayout());
+        tableWrapper.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        tableWrapper.setBackground(Color.WHITE);
+        tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
+        panel.add(tableWrapper, BorderLayout.CENTER);
+
         return panel;
     }
 
     private JPanel createBookDetailsPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setPreferredSize(new Dimension(250, 0));
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0, 10, 0, 0),
-                BorderFactory.createLineBorder(new Color(220, 220, 220))
-        ));
+
         panel.setBackground(Color.WHITE);
 
         JLabel placeholderLabel = new JLabel("Seleziona un libro per visualizzare i dettagli", JLabel.CENTER);
@@ -338,22 +402,6 @@ public class LibreriaPersonale extends JFrame {
         detailsPanel.add(new JLabel("Stato:"));
         detailsPanel.add(new JLabel(book.getReadStatus().toString().replace("_", " ")));
 
-        // Pulsanti azione
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        buttonsPanel.setOpaque(false);
-        buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton editButton = new JButton("Modifica");
-        JButton deleteButton = new JButton("Elimina");
-
-        editButton.setBackground(new Color(70, 130, 180));
-        editButton.setForeground(Color.WHITE);
-        deleteButton.setBackground(new Color(220, 53, 69));
-        deleteButton.setForeground(Color.WHITE);
-
-        buttonsPanel.add(editButton);
-        buttonsPanel.add(deleteButton);
-
         // Aggiunge tutti i componenti al pannello
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(titleLabel);
@@ -363,57 +411,11 @@ public class LibreriaPersonale extends JFrame {
         contentPanel.add(coverPanel);
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(detailsPanel);
-        contentPanel.add(Box.createVerticalStrut(20));
-        contentPanel.add(buttonsPanel);
+        contentPanel.add(Box.createVerticalGlue()); // Spinge tutto verso l'alto
 
         bookDetailsPanel.add(new JScrollPane(contentPanel), BorderLayout.CENTER);
         bookDetailsPanel.revalidate();
         bookDetailsPanel.repaint();
-    }
-
-    private JPanel createBottomPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel.setOpaque(false);
-
-        // Stelle di valutazione (solo visive)
-        JPanel starsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        starsPanel.setOpaque(false);
-
-        // Aggiungi 5 stelle
-        for (int i = 0; i < 5; i++) {
-            JLabel starLabel = new JLabel("★");
-            starLabel.setFont(new Font("Dialog", Font.BOLD, 24));
-            starLabel.setForeground(i < 3 ? new Color(255, 215, 0) : Color.GRAY);
-            starsPanel.add(starLabel);
-        }
-
-        // Bottoni per le funzionalità
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        buttonPanel.setOpaque(false);
-
-        JButton addButton = new JButton("Nuovo Libro");
-        addButton.setBackground(new Color(40, 167, 69));
-        addButton.setForeground(Color.WHITE);
-
-        JButton exportButton = new JButton("Esporta");
-        exportButton.setBackground(new Color(108, 117, 125));
-        exportButton.setForeground(Color.WHITE);
-
-        JButton infoButton = new JButton("i");
-        infoButton.setBackground(new Color(23, 162, 184));
-        infoButton.setForeground(Color.WHITE);
-        infoButton.setFont(new Font("Dialog", Font.BOLD, 12));
-        infoButton.setPreferredSize(new Dimension(30, 30));
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(exportButton);
-        buttonPanel.add(infoButton);
-
-        panel.add(starsPanel);
-        panel.add(Box.createHorizontalStrut(50));
-        panel.add(buttonPanel);
-
-        return panel;
     }
 
     public static void main(String[] args) {
@@ -423,39 +425,7 @@ public class LibreriaPersonale extends JFrame {
         });
     }
 
-    // Classe per creare l'ombra attorno alle schede
-    private static class ShadowBorder extends AbstractBorder {
-        private static final int SHADOW_SIZE = 4;
 
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            Color shadowColor = new Color(0, 0, 0, 30);
-            g2.setColor(shadowColor);
-
-            // Disegna l'ombra
-            for (int i = 0; i < SHADOW_SIZE; i++) {
-                int alphaLevel = 30 - 30 * i / SHADOW_SIZE;
-                g2.setColor(new Color(0, 0, 0, alphaLevel));
-                g2.drawRoundRect(x + i, y + i, width - i * 2, height - i * 2, 10, 10);
-            }
-
-            g2.dispose();
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(SHADOW_SIZE, SHADOW_SIZE, SHADOW_SIZE, SHADOW_SIZE);
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c, Insets insets) {
-            insets.left = insets.top = insets.right = insets.bottom = SHADOW_SIZE;
-            return insets;
-        }
-    }
 
     public List<Book> getSampleBooks() {
         List<Book> books = new ArrayList<>();
@@ -477,7 +447,7 @@ public class LibreriaPersonale extends JFrame {
             Book book = new Book.Builder()
                     .setIsbn("ISBN-" + (1000 + i)) // placeholder ISBN
                     .setTitle(title)
-                    .setAuthor(author)
+                    .setAuthor(author+"★★")
                     .setPublisher("Editore Sconosciuto")
                     .setPages(300)
                     .setGenre(genre)
