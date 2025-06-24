@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -26,7 +27,6 @@ public class LibreriaPersonaleView extends JFrame {
 
     private JMenuItem importaButton;
     private JMenuItem esportaButton;
-    private List<BookDto> books;
 
     public String getSelectedSearchTypeCombo(){
         return searchTypeCombo.getSelectedItem().toString();
@@ -46,7 +46,6 @@ public class LibreriaPersonaleView extends JFrame {
         setTitle("COPERTINA - La Mia Libreria Personale");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.books = new ArrayList<>();
 
         // Imposta un look moderno
         try {
@@ -191,19 +190,19 @@ public class LibreriaPersonaleView extends JFrame {
         panel.setOpaque(false);
 
         // Crea i dati per la tabella
-        String[] columnNames = {"Titolo", "Autore", "Genere", "Stato"};
-        Object[][] tableData = new Object[books.size()][4];
+        String[] columnNames = {"Titolo", "Autore", "Genere", "Stato", "Recensione"};
 
-        for (int i = 0; i < books.size(); i++) {
-            BookDto book = books.get(i);
-            tableData[i][0] = book.getTitle();
-            tableData[i][1] = book.getAuthor();
-            tableData[i][2] = book.getGenre();
-            tableData[i][3] = book.getReadStatus().toString().replace("_", " ");
-        }
+        // Usa DefaultTableModel invece di array statico
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Rende la tabella non editabile
+            }
+        };
 
-        // Crea la tabella
-        libraryTable = new JTable(tableData, columnNames) {
+
+        // Crea la tabella con il modello
+        libraryTable = new JTable(tableModel) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Rende la tabella non editabile
@@ -225,7 +224,7 @@ public class LibreriaPersonaleView extends JFrame {
         libraryTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Autore
         libraryTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Genere
         libraryTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Stato
-
+        libraryTable.getColumnModel().getColumn(4).setPreferredWidth(100);
         // Colora le righe alternate
         libraryTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -346,7 +345,24 @@ public class LibreriaPersonaleView extends JFrame {
         bookDetailsPanel.revalidate();
         bookDetailsPanel.repaint();
     }
+    // Metodo per aggiungere un nuovo libro
+    public void addBookToTable(BookDto newBook) {
+        DefaultTableModel model = (DefaultTableModel) libraryTable.getModel();
+        Object[] rowData = {
+                newBook.getTitle(),
+                newBook.getAuthor(),
+                newBook.getGenre(),
+                newBook.getReadStatus().getVal(),
+                "✩".repeat(newBook.getReview().getStars())
+        };
+        model.addRow(rowData);
+    }
 
+    // Metodo per rimuovere una riga
+    public void removeBookFromTable(int rowIndex) {
+        DefaultTableModel model = (DefaultTableModel) libraryTable.getModel();
+        model.removeRow(rowIndex);
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             LibreriaPersonaleView app = new LibreriaPersonaleView();
@@ -355,9 +371,7 @@ public class LibreriaPersonaleView extends JFrame {
     }
 
 
-    public void setBooks(List<BookDto> books) {
-        this.books = books;
-    }
+
 
     public int libraryTableGetColumnAtPoint(Point p) {
         return libraryTableGetColumnAtPoint(p);

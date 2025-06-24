@@ -25,4 +25,3 @@ public class Review {
         this.comment = comment;
     }
 }
-// fai il loader e saver di dati e la card della view.

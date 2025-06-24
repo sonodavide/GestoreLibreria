@@ -4,12 +4,16 @@ import com.sonodavide.gestorelibreria.model.Book;
 import com.sonodavide.gestorelibreria.model.BookDto;
 import com.sonodavide.gestorelibreria.model.ObservableList.ObservableElement;
 import com.sonodavide.gestorelibreria.model.ObservableList.ObservableList;
+import com.sonodavide.gestorelibreria.model.ReadStatus;
+import com.sonodavide.gestorelibreria.model.Review;
 import com.sonodavide.gestorelibreria.view.LibreriaPersonaleView;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibreriaPersonaleController {
     private LibreriaPersonaleView view;
@@ -18,7 +22,7 @@ public class LibreriaPersonaleController {
 
     public LibreriaPersonaleController(LibreriaPersonaleView view) {
         this.view = view;
-        books = new ObservableList<>();
+        books = new ObservableList<>(initBooksExample());
         selectedBook = new ObservableElement<>();
 
         view.addImportaButtonActionListener(e -> {
@@ -120,5 +124,45 @@ public class LibreriaPersonaleController {
     }
 
 
+    private List<BookDto> initBooksExample(){
+        List<BookDto> books = new ArrayList<>();
 
+        BookDto book1 = new BookDto();
+        book1.setIsbn("978-1234567890");
+        book1.setTitle("Il Signore degli Anelli");
+        book1.setPages(1216);
+        book1.setAuthor("J.R.R. Tolkien");
+        book1.setPublisher("Bompiani");
+        book1.setReadStatus(ReadStatus.READ);
+        book1.setGenre("Fantasy");
+        book1.setReview(new Review(5, "Epico e coinvolgente"));
+
+        BookDto book2 = new BookDto();
+        book2.setIsbn("978-0451524935");
+        book2.setTitle("1984");
+        book2.setPages(328);
+        book2.setAuthor("George Orwell");
+        book2.setPublisher("Mondadori");
+        book2.setReadStatus(ReadStatus.READING);
+        book2.setGenre("Distopia");
+        book2.setReview(new Review(4, "Molto attuale e inquietante"));
+
+        BookDto book3 = new BookDto();
+        book3.setIsbn("978-8804681963");
+        book3.setTitle("Il nome della rosa");
+        book3.setPages(512);
+        book3.setAuthor("Umberto Eco");
+        book3.setPublisher("Bompiani");
+        book3.setReadStatus(ReadStatus.NOT_READ);
+        book3.setGenre("Giallo storico");
+        book3.setReview(new Review(0, "")); // Nessuna recensione ancora
+
+        books.add(book1);
+        books.add(book2);
+        books.add(book3);
+        for(BookDto b : books){
+            view.addBookToTable(b);
+        }
+        return books;
+    }
 }

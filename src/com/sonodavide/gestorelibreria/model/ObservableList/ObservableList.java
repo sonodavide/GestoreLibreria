@@ -14,7 +14,9 @@ public class ObservableList<T> implements Subject{
     public ObservableList() {
         list = new ArrayList<>();
     }
-
+    public ObservableList(List<T> list) {
+        this.list = list;
+    }
     @Override
     public void attach(Observer observer) {
         this.observers.add(observer);
