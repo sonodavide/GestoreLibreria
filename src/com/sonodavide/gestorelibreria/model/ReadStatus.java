@@ -1,5 +1,11 @@
 package com.sonodavide.gestorelibreria.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum ReadStatus {
-    READING, READ, NOT_READ
+    READING("Leggendo"), READ("Letto"), NOT_READ("Non Letto");
+    private final String val;
 }

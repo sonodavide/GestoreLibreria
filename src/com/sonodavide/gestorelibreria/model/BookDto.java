@@ -11,5 +11,10 @@ public class BookDto {
     private String isbn;
     private String title;
     private int pages;
+    private String author;
+    private String publisher;
+    private ReadStatus readStatus;
+    private String genre;
+    private Review review;
 
 }

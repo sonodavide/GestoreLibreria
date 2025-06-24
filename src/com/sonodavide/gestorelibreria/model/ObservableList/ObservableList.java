@@ -14,9 +14,7 @@ public class ObservableList<T> implements Subject{
     public ObservableList() {
         list = new ArrayList<>();
     }
-    public ObservableList(List<T> list) {
-        this.list = list;
-    }
+
     @Override
     public void attach(Observer observer) {
         this.observers.add(observer);
@@ -41,11 +39,14 @@ public class ObservableList<T> implements Subject{
         return Collections.unmodifiableList(list);
 
     }
-
+    public int getSize() {
+        return list.size();
+    }
 
 
     @Override
     public void notifyObservers() {
-
+        for(Observer observer : observers)
+            observer.update();
     }
 }
