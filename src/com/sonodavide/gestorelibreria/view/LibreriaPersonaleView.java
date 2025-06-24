@@ -1,63 +1,52 @@
 package com.sonodavide.gestorelibreria.view;
 
 import com.sonodavide.gestorelibreria.model.Book;
+import com.sonodavide.gestorelibreria.model.BookDto;
 import com.sonodavide.gestorelibreria.model.ReadStatus;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LibreriaPersonale extends JFrame {
+public class LibreriaPersonaleView extends JFrame {
     private JTable libraryTable;
     private JTextField searchField;
     private JComboBox<String> searchTypeCombo;
     private JPanel bookDetailsPanel;
     private JButton addButton, editButton, deleteButton;
+    private JButton searchButton;
 
-    private List<Book> books;
-    // Dati di esempio
-    private final Object[][] bookData = {
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Nome della Rosa", "Umberto Eco", "Storico", "Letto", "https://m.media-amazon.com/images/I/81S+VsvKnJL._AC_UF1000,1000_QL80_.jpg"},
-            {"1984", "George Orwell", "Distopico", "Da leggere", "https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg"},
-            {"Il Signore degli Anelli", "J.R.R. Tolkien", "Fantasy", "In corso", "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg"},
-            {"Dune", "Frank Herbert", "Sci-Fi", "Letto", "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg"},
-            {"L'Alchimista", "Paulo Coelho", "Filosofico", "Letto", "https://m.media-amazon.com/images/I/71Ui-NwYUmL._AC_UF1000,1000_QL80_.jpg"}
-    };
+    private JMenuItem importaButton;
+    private JMenuItem esportaButton;
+    private List<BookDto> books;
 
-    public LibreriaPersonale() {
+    public String getSelectedSearchTypeCombo(){
+        return searchTypeCombo.getSelectedItem().toString();
+    }
+
+    public void setSearchTypeComboItems(List<String> strings){
+        if(strings == null) throw new NullPointerException("Search type combo is null");
+        searchTypeCombo = new JComboBox<>(strings.toArray(new String[0]));
+        if (!strings.isEmpty()) {
+            searchTypeCombo.setSelectedIndex(0);
+        }
+    }
+
+
+
+    public LibreriaPersonaleView() {
         setTitle("COPERTINA - La Mia Libreria Personale");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.books = this.getSampleBooks();
+        this.books = new ArrayList<>();
 
         // Imposta un look moderno
         try {
@@ -91,6 +80,12 @@ public class LibreriaPersonale extends JFrame {
 
 
     }
+    public void addImportaButtonActionListener(ActionListener actionListener) {
+        importaButton.addActionListener(actionListener);
+    }
+    public void addEsportaButtonActionListener(ActionListener actionListener) {
+        esportaButton.addActionListener(actionListener);
+    }
 
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -98,26 +93,31 @@ public class LibreriaPersonale extends JFrame {
         // Menu Opzioni
         JMenu opzioniMenu = new JMenu("Opzioni");
 
-        JMenuItem importaItem = new JMenuItem("Importa");
-        JMenuItem esportaItem = new JMenuItem("Esporta");
+        importaButton = new JMenuItem("Importa");
+        esportaButton = new JMenuItem("Esporta");
 
-        // Aggiungi action listeners
-        importaItem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Funzione Importa non ancora implementata",
-                    "Importa", JOptionPane.INFORMATION_MESSAGE);
-        });
 
-        esportaItem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Funzione Esporta non ancora implementata",
-                    "Esporta", JOptionPane.INFORMATION_MESSAGE);
-        });
 
-        opzioniMenu.add(importaItem);
-        opzioniMenu.add(esportaItem);
+
+
+        opzioniMenu.add(importaButton);
+        opzioniMenu.add(esportaButton);
 
         menuBar.add(opzioniMenu);
 
         setJMenuBar(menuBar);
+    }
+    public void setAddButtonActionListener(ActionListener actionListener) {
+        addButton.addActionListener(actionListener);
+    }
+    public void setEditButtonActionListener(ActionListener actionListener) {
+        editButton.addActionListener(actionListener);
+    }
+    public void setDeleteButtonActionListener(ActionListener actionListener) {
+        deleteButton.addActionListener(actionListener);
+    }
+    public String getSearchText(){
+        return searchField.getText();
     }
 
     private JPanel createTopPanel() {
@@ -147,37 +147,11 @@ public class LibreriaPersonale extends JFrame {
         deleteButton.setPreferredSize(new Dimension(100, 35));
 
         // Aggiungi action listeners
-        addButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Funzione Aggiungi non ancora implementata",
-                    "Aggiungi Libro", JOptionPane.INFORMATION_MESSAGE);
-        });
 
-        editButton.addActionListener(e -> {
-            int selectedRow = libraryTable.getSelectedRow();
-            if (selectedRow >= 0) {
-                JOptionPane.showMessageDialog(this, "Modifica libro: " + books.get(selectedRow).getTitle(),
-                        "Modifica Libro", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleziona un libro da modificare",
-                        "Nessun libro selezionato", JOptionPane.WARNING_MESSAGE);
-            }
-        });
 
-        deleteButton.addActionListener(e -> {
-            int selectedRow = libraryTable.getSelectedRow();
-            if (selectedRow >= 0) {
-                int result = JOptionPane.showConfirmDialog(this,
-                        "Sei sicuro di voler eliminare: " + books.get(selectedRow).getTitle() + "?",
-                        "Conferma eliminazione", JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION) {
-                    JOptionPane.showMessageDialog(this, "Libro eliminato (simulazione)",
-                            "Eliminazione", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleziona un libro da eliminare",
-                        "Nessun libro selezionato", JOptionPane.WARNING_MESSAGE);
-            }
-        });
+
+
+
 
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
@@ -193,20 +167,12 @@ public class LibreriaPersonale extends JFrame {
         searchTypeCombo = new JComboBox<>(new String[]{"Titolo", "Autore", "Genere"});
         searchTypeCombo.setPreferredSize(new Dimension(100, 35));
 
-        JButton searchButton = new JButton("Cerca");
+        searchButton = new JButton("Cerca");
         searchButton.setBackground(new Color(70, 130, 180));
         searchButton.setForeground(Color.WHITE);
         searchButton.setPreferredSize(new Dimension(100, 35));
 
-        searchButton.addActionListener(e -> {
-            String searchText = searchField.getText();
-            String searchType = (String) searchTypeCombo.getSelectedItem();
-            if (!searchText.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Ricerca '" + searchText + "' per " + searchType + " (non ancora implementata)",
-                        "Ricerca", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
+
 
         searchPanel.add(new JLabel("Cerca:"));
         searchPanel.add(searchField);
@@ -229,7 +195,7 @@ public class LibreriaPersonale extends JFrame {
         Object[][] tableData = new Object[books.size()][4];
 
         for (int i = 0; i < books.size(); i++) {
-            Book book = books.get(i);
+            BookDto book = books.get(i);
             tableData[i][0] = book.getTitle();
             tableData[i][1] = book.getAuthor();
             tableData[i][2] = book.getGenre();
@@ -259,23 +225,7 @@ public class LibreriaPersonale extends JFrame {
         libraryTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Autore
         libraryTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Genere
         libraryTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Stato
-        libraryTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
-                    int row = libraryTable.rowAtPoint(e.getPoint());
-                    if (row >= 0 && row < books.size()) {
-                        Book selectedBook = books.get(row);
-                        JOptionPane.showMessageDialog(
-                                LibreriaPersonale.this,
-                                "Hai fatto doppio clic su: " + selectedBook.getTitle(),
-                                "Doppio clic",
-                                JOptionPane.INFORMATION_MESSAGE
-                        );
-                    }
-                }
-            }
-        });
+
         // Colora le righe alternate
         libraryTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -297,38 +247,9 @@ public class LibreriaPersonale extends JFrame {
                 return c;
             }
         });
-        libraryTable.getTableHeader().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int column = libraryTable.columnAtPoint(e.getPoint());
-                String columnName = libraryTable.getColumnName(column);
 
-                JOptionPane.showMessageDialog(
-                        LibreriaPersonale.this,
-                        "Hai cliccato sulla colonna: " + columnName,
-                        "Header cliccato",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-        });
 
-        // Aggiungi listener per la selezione delle righe
-        libraryTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int selectedRow = libraryTable.getSelectedRow();
-                if (selectedRow >= 0 && selectedRow < books.size()) {
-                    Book selectedBook = books.get(selectedRow);
-                    updateBookDetailsPanel(selectedBook);
-                    // Abilita i pulsanti modifica ed elimina quando un libro è selezionato
-                    editButton.setEnabled(true);
-                    deleteButton.setEnabled(true);
-                } else {
-                    // Disabilita i pulsanti quando nessun libro è selezionato
-                    editButton.setEnabled(false);
-                    deleteButton.setEnabled(false);
-                }
-            }
-        });
+
 
         // Inizialmente disabilita i pulsanti modifica ed elimina
         editButton.setEnabled(false);
@@ -348,7 +269,15 @@ public class LibreriaPersonale extends JFrame {
 
         return panel;
     }
-
+    public void setTableSelectionModelListSelectionListener(ListSelectionListener l) {
+        libraryTable.getSelectionModel().addListSelectionListener(l);
+    }
+    public void setTableHeaderMouseListener(MouseListener l) {
+        libraryTable.getTableHeader().addMouseListener(l);
+    }
+    public void setTableMouseListener(MouseListener l) {
+        libraryTable.addMouseListener(l);
+    }
     private JPanel createBookDetailsPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setPreferredSize(new Dimension(250, 0));
@@ -420,43 +349,23 @@ public class LibreriaPersonale extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LibreriaPersonale app = new LibreriaPersonale();
+            LibreriaPersonaleView app = new LibreriaPersonaleView();
             app.setVisible(true);
         });
     }
 
 
+    public void setBooks(List<BookDto> books) {
+        this.books = books;
+    }
 
-    public List<Book> getSampleBooks() {
-        List<Book> books = new ArrayList<>();
-
-        for (int i = 0; i < bookData.length; i++) {
-            String title = (String) bookData[i][0];
-            String author = (String) bookData[i][1];
-            String genre = (String) bookData[i][2];
-            String readStatusStr = ((String) bookData[i][3]).toUpperCase().replace(" ", "_");
-            ReadStatus readStatus;
-
-            try {
-                readStatus = ReadStatus.valueOf(readStatusStr);
-            } catch (IllegalArgumentException e) {
-                readStatus = ReadStatus.NOT_READ;
-            }
-
-            // Costruzione del libro
-            Book book = new Book.Builder()
-                    .setIsbn("ISBN-" + (1000 + i)) // placeholder ISBN
-                    .setTitle(title)
-                    .setAuthor(author+"★★")
-                    .setPublisher("Editore Sconosciuto")
-                    .setPages(300)
-                    .setGenre(genre)
-                    .setReadStatus(readStatus)
-                    .build();
-
-            books.add(book);
-        }
-
-        return books;
+    public int libraryTableGetColumnAtPoint(Point p) {
+        return libraryTableGetColumnAtPoint(p);
+    }
+    public int libraryTableGetRowAtPoint(Point p){
+        return libraryTable.rowAtPoint(p);
+    }
+    public String libraryTableGetColumnNameByIndex(int index){
+        return libraryTable.getColumnName(index);
     }
 }
