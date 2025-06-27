@@ -1,5 +1,7 @@
 package com.sonodavide.gestorelibreria.controller;
 
+import com.sonodavide.gestorelibreria.commands.CommandHandler;
+import com.sonodavide.gestorelibreria.commands.ConcreteCommandHandler;
 import com.sonodavide.gestorelibreria.model.Book;
 import com.sonodavide.gestorelibreria.model.BookDto;
 import com.sonodavide.gestorelibreria.model.ObservableList.ObservableElement;
@@ -19,7 +21,7 @@ public class LibreriaPersonaleController {
     private LibreriaPersonaleView view;
     private ObservableList<BookDto> books;
     private ObservableElement<BookDto> selectedBook;
-
+    private final ConcreteCommandHandler commandHandler = new ConcreteCommandHandler();
     public LibreriaPersonaleController(LibreriaPersonaleView view) {
         this.view = view;
         books = new ObservableList<>(initBooksExample());
@@ -80,7 +82,9 @@ public class LibreriaPersonaleController {
         view.setTableMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //fai partire modifica
                 if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+
                     int row = view.libraryTableGetRowAtPoint(e.getPoint());
                     if (row >= 0 && row < books.getSize()) {
                         Book selectedBook = null; //books.get(row)
@@ -97,6 +101,7 @@ public class LibreriaPersonaleController {
         view.setTableHeaderMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                //ordina per quella roba
                 int column = view.libraryTableGetColumnAtPoint(e.getPoint());
                 String columnName = view.libraryTableGetColumnNameByIndex(column);
 
@@ -111,10 +116,9 @@ public class LibreriaPersonaleController {
         // Aggiungi listener per la selezione delle righe
         view.setTableSelectionModelListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                //int selectedRow = libraryTable.getSelectedRow();
-                int selectedRow = 0;
+                int selectedRow = view.libraryTableGetSelectedRow();
                 if (selectedRow >= 0 && selectedRow < books.getSize()) {
-                    Book selectedBook = null;
+                    selectedBook.setElement(books.getElement(selectedRow));
                     //updateBookDetailsPanel(selectedBook);
                 }
             }
@@ -123,7 +127,9 @@ public class LibreriaPersonaleController {
         view.show();
     }
 
-
+    /*
+    Metodo per caricare dei libri di esempio intanto che non li carico da file e non ho repo veri
+     */
     private List<BookDto> initBooksExample(){
         List<BookDto> books = new ArrayList<>();
 

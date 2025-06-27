@@ -45,6 +45,9 @@ public class ObservableList<T> implements Subject{
         return list.size();
     }
 
+    public T getElement(int i){
+        return list.get(i);
+    }
 
     @Override
     public void notifyObservers() {

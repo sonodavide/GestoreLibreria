@@ -372,7 +372,9 @@ public class LibreriaPersonaleView extends JFrame {
 
 
 
-
+    public int libraryTableGetSelectedRow() {
+        return libraryTable.getSelectedRow();
+    }
     public int libraryTableGetColumnAtPoint(Point p) {
         return libraryTableGetColumnAtPoint(p);
     }
