@@ -10,6 +10,9 @@ public class TitleBookDtoOrderStrategy implements BookDtoOrderStrategy {
     @Override
     public List<BookDto> execute(List<BookDto> bookDtos, boolean reverse) {
         Comparator<BookDto> comparator = Comparator.comparing(BookDto::getTitle, String.CASE_INSENSITIVE_ORDER);
+        if (reverse) {
+            comparator = comparator.reversed();
+        }
         return bookDtos.stream().sorted(comparator).collect(Collectors.toList());
 
     }
