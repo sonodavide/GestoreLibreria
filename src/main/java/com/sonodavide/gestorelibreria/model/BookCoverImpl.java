@@ -2,7 +2,6 @@ package com.sonodavide.gestorelibreria.model;
 
 import com.sonodavide.gestorelibreria.util.Pair;
 
-import java.awt.*;
 import java.nio.file.Path;
 
 public class BookCoverImpl implements BookCover {

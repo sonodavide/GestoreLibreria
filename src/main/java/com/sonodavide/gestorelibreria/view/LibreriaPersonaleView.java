@@ -2,7 +2,6 @@ package com.sonodavide.gestorelibreria.view;
 
 import com.sonodavide.gestorelibreria.model.Book;
 import com.sonodavide.gestorelibreria.model.BookDto;
-import com.sonodavide.gestorelibreria.model.ReadStatus;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -11,10 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LibreriaPersonaleView extends JFrame {

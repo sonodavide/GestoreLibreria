@@ -1,9 +1,6 @@
 package com.sonodavide.gestorelibreria.model.ObservableList;
 
-import com.sonodavide.gestorelibreria.model.BookDto;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

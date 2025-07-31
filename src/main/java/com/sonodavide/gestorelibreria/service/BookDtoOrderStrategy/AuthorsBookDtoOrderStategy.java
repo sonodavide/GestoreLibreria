@@ -5,7 +5,6 @@ import com.sonodavide.gestorelibreria.model.BookDto;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AuthorsBookDtoOrderStategy implements BookDtoOrderStrategy {

@@ -1,6 +1,5 @@
 package com.sonodavide.gestorelibreria.controller;
 
-import com.sonodavide.gestorelibreria.commands.CommandHandler;
 import com.sonodavide.gestorelibreria.commands.ConcreteCommandHandler;
 import com.sonodavide.gestorelibreria.model.Book;
 import com.sonodavide.gestorelibreria.model.BookDto;
@@ -11,7 +10,6 @@ import com.sonodavide.gestorelibreria.model.Review;
 import com.sonodavide.gestorelibreria.view.LibreriaPersonaleView;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

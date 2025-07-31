@@ -1,6 +1,5 @@
 package com.sonodavide.gestorelibreria.service.BookDtoOrderStrategy;
 
-import com.sonodavide.gestorelibreria.model.Book;
 import com.sonodavide.gestorelibreria.model.BookDto;
 
 import java.util.Comparator;

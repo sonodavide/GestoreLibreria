@@ -2,7 +2,6 @@ package com.sonodavide.gestorelibreria.service.BookDtoFilterStrategy;
 
 import com.sonodavide.gestorelibreria.model.BookDto;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
