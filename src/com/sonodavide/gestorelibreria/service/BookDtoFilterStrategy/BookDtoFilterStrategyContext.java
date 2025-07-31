@@ -1,19 +1,21 @@
 package com.sonodavide.gestorelibreria.service.BookDtoFilterStrategy;
 
 import com.sonodavide.gestorelibreria.model.BookDto;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor
+
 public class BookDtoFilterStrategyContext {
+    @Getter
+    private BookDtoFilterStrategy strategy;
 
-    private BookDtoFilterStrategy filter;
-
-    public void setFilter(BookDtoFilterStrategy filter) {
-        this.filter = filter;
+    public BookDtoFilterStrategyContext(){
+        this.strategy = new TitleBookDtoFilterStrategy();
     }
+
     public List<BookDto> execute(List<BookDto> books, String param) {
-        return filter.execute(books, param);
+        return strategy.execute(books, param);
     }
 }
