@@ -40,8 +40,6 @@ public class LibreriaPersonaleView extends JFrame {
         }
     }
 
-
-
     public LibreriaPersonaleView() {
         setTitle("COPERTINA - La Mia Libreria Personale");
         setSize(1000, 600);
@@ -76,12 +74,12 @@ public class LibreriaPersonaleView extends JFrame {
 
         setContentPane(mainPanel);
         setLocationRelativeTo(null);
-
-
     }
+
     public void addImportaButtonActionListener(ActionListener actionListener) {
         importaButton.addActionListener(actionListener);
     }
+
     public void addEsportaButtonActionListener(ActionListener actionListener) {
         esportaButton.addActionListener(actionListener);
     }
@@ -95,10 +93,6 @@ public class LibreriaPersonaleView extends JFrame {
         importaButton = new JMenuItem("Importa");
         esportaButton = new JMenuItem("Esporta");
 
-
-
-
-
         opzioniMenu.add(importaButton);
         opzioniMenu.add(esportaButton);
 
@@ -106,15 +100,19 @@ public class LibreriaPersonaleView extends JFrame {
 
         setJMenuBar(menuBar);
     }
+
     public void setAddButtonActionListener(ActionListener actionListener) {
         addButton.addActionListener(actionListener);
     }
+
     public void setEditButtonActionListener(ActionListener actionListener) {
         editButton.addActionListener(actionListener);
     }
+
     public void setDeleteButtonActionListener(ActionListener actionListener) {
         deleteButton.addActionListener(actionListener);
     }
+
     public String getSearchText(){
         return searchField.getText();
     }
@@ -145,13 +143,6 @@ public class LibreriaPersonaleView extends JFrame {
         deleteButton.setForeground(Color.WHITE);
         deleteButton.setPreferredSize(new Dimension(100, 35));
 
-        // Aggiungi action listeners
-
-
-
-
-
-
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
@@ -171,8 +162,6 @@ public class LibreriaPersonaleView extends JFrame {
         searchButton.setForeground(Color.WHITE);
         searchButton.setPreferredSize(new Dimension(100, 35));
 
-
-
         searchPanel.add(new JLabel("Cerca:"));
         searchPanel.add(searchField);
         searchPanel.add(searchTypeCombo);
@@ -184,13 +173,12 @@ public class LibreriaPersonaleView extends JFrame {
         return panel;
     }
 
-
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        // Crea i dati per la tabella
-        String[] columnNames = {"Titolo", "Autore", "Genere", "Stato", "Recensione"};
+        // Crea i dati per la tabella - ora con "Autori" e "Generi" al plurale
+        String[] columnNames = {"Titolo", "Autori", "Generi", "Stato", "Recensione"};
 
         // Usa DefaultTableModel invece di array statico
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
@@ -199,7 +187,6 @@ public class LibreriaPersonaleView extends JFrame {
                 return false; // Rende la tabella non editabile
             }
         };
-
 
         // Crea la tabella con il modello
         libraryTable = new JTable(tableModel) {
@@ -221,10 +208,11 @@ public class LibreriaPersonaleView extends JFrame {
 
         // Imposta la larghezza delle colonne
         libraryTable.getColumnModel().getColumn(0).setPreferredWidth(250); // Titolo
-        libraryTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Autore
-        libraryTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Genere
+        libraryTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Autori
+        libraryTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Generi (più largo per liste)
         libraryTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Stato
-        libraryTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+        libraryTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Recensione
+
         // Colora le righe alternate
         libraryTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -247,9 +235,6 @@ public class LibreriaPersonaleView extends JFrame {
             }
         });
 
-
-
-
         // Inizialmente disabilita i pulsanti modifica ed elimina
         editButton.setEnabled(false);
         deleteButton.setEnabled(false);
@@ -268,19 +253,22 @@ public class LibreriaPersonaleView extends JFrame {
 
         return panel;
     }
+
     public void setTableSelectionModelListSelectionListener(ListSelectionListener l) {
         libraryTable.getSelectionModel().addListSelectionListener(l);
     }
+
     public void setTableHeaderMouseListener(MouseListener l) {
         libraryTable.getTableHeader().addMouseListener(l);
     }
+
     public void setTableMouseListener(MouseListener l) {
         libraryTable.addMouseListener(l);
     }
+
     private JPanel createBookDetailsPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setPreferredSize(new Dimension(250, 0));
-
         panel.setBackground(Color.WHITE);
 
         JLabel placeholderLabel = new JLabel("Seleziona un libro per visualizzare i dettagli", JLabel.CENTER);
@@ -303,8 +291,9 @@ public class LibreriaPersonaleView extends JFrame {
         titleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Autore
-        JLabel authorLabel = new JLabel("di " + book.getAuthor());
+        // Autori (ora come lista)
+        String authorsText = book.getAuthors().isEmpty() ? "Autore sconosciuto" : String.join(", ", book.getAuthors());
+        JLabel authorLabel = new JLabel("di " + authorsText);
         authorLabel.setFont(new Font("Dialog", Font.ITALIC, 14));
         authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -325,8 +314,10 @@ public class LibreriaPersonaleView extends JFrame {
         detailsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         detailsPanel.setMaximumSize(new Dimension(220, 50));
 
-        detailsPanel.add(new JLabel("Genere:"));
-        detailsPanel.add(new JLabel(book.getGenre()));
+        // Generi (ora come lista)
+        String genresText = book.getGenres().isEmpty() ? "Nessun genere" : String.join(", ", book.getGenres());
+        detailsPanel.add(new JLabel("Generi:"));
+        detailsPanel.add(new JLabel(genresText));
         detailsPanel.add(new JLabel("Stato:"));
         detailsPanel.add(new JLabel(book.getReadStatus().toString().replace("_", " ")));
 
@@ -345,13 +336,19 @@ public class LibreriaPersonaleView extends JFrame {
         bookDetailsPanel.revalidate();
         bookDetailsPanel.repaint();
     }
-    // Metodo per aggiungere un nuovo libro
+
+    // Metodo per aggiungere un nuovo libro - ora gestisce liste
     public void addBookToTable(BookDto newBook) {
         DefaultTableModel model = (DefaultTableModel) libraryTable.getModel();
+
+        // Converte le liste in stringhe separate da virgola
+        String authorsText = newBook.getAuthors().isEmpty() ? "Autore sconosciuto" : String.join(", ", newBook.getAuthors());
+        String genresText = newBook.getGenres().isEmpty() ? "Nessun genere" : String.join(", ", newBook.getGenres());
+
         Object[] rowData = {
                 newBook.getTitle(),
-                newBook.getAuthor(),
-                newBook.getGenre(),
+                authorsText,
+                genresText,
                 newBook.getReadStatus().getVal(),
                 "✩".repeat(newBook.getReview().getStars())
         };
@@ -363,6 +360,7 @@ public class LibreriaPersonaleView extends JFrame {
         DefaultTableModel model = (DefaultTableModel) libraryTable.getModel();
         model.removeRow(rowIndex);
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             LibreriaPersonaleView app = new LibreriaPersonaleView();
@@ -370,17 +368,18 @@ public class LibreriaPersonaleView extends JFrame {
         });
     }
 
-
-
     public int libraryTableGetSelectedRow() {
         return libraryTable.getSelectedRow();
     }
+
     public int libraryTableGetColumnAtPoint(Point p) {
-        return libraryTableGetColumnAtPoint(p);
+        return libraryTable.columnAtPoint(p); // Fix: era ricorsivo!
     }
+
     public int libraryTableGetRowAtPoint(Point p){
         return libraryTable.rowAtPoint(p);
     }
+
     public String libraryTableGetColumnNameByIndex(int index){
         return libraryTable.getColumnName(index);
     }
